@@ -16,7 +16,7 @@ class GeneralContentSeeder extends Seeder
             ],
             [
                 'content' => [
-                    'header_image_url' => config('services.whatsapp.welcome_image_url', 'https://myphonemymoney.com.br/mpmm.jpg'),
+                    'header_image_url' => config('services.whatsapp.welcome_image_url'),
                     'body' => "Olá, 🙏🏼🙏🏼 seja bem-vindo ao\n*_MyPhone MyMoney®_*\n*_Meu Celular Meu Dinheiro®_*\n\nExperimente e aproveite todas as vantagens de ter uma carteira no\n*_MyPhone MyMoney®_*\n\nO serviço é 100% automático.\n\nA equipe MPMM está à disposição pelo canal oficial de suporte.\n\nVamos começar?",
                 ],
                 'actions' => [

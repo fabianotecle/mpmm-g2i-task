@@ -73,12 +73,10 @@ class TransferReceiptImageService
         imagepng($image, null, 6);
         $contents = (string) ob_get_clean();
         Storage::disk('local')->put($path, $contents);
-        $baseUrl = rtrim((string) config('services.documents.public_url', config('app.url')), '/');
-
         return [
             'filename' => $storedFilename,
             'path' => Storage::disk('local')->path($path),
-            'url' => $baseUrl.'/api/images/transfer-receipts/'.$storedFilename,
+            'url' => DocumentAccessUrl::for('images.transfer-receipts', $storedFilename),
         ];
     }
 

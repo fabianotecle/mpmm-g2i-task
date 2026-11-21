@@ -259,12 +259,10 @@ class WhatsappConversationSender
 
             if ($delivery !== [] && ! $templateWasSent) {
                 Log::warning('WhatsApp notification template delivery failed.', [
-                    'to' => $notification['to'],
                     'template' => $notification['template_name']
                         ?? config('services.whatsapp.start_template', 'boas_vindas'),
                     'status' => $delivery[0]['status'] ?? null,
                     'reason' => $delivery[0]['reason'] ?? null,
-                    'message' => $delivery[0]['message'] ?? null,
                 ]);
             }
 
@@ -433,9 +431,7 @@ class WhatsappConversationSender
             // during a rolling deployment in which the migration is pending.
             Log::error('WhatsApp notification tracking is unavailable.', [
                 'transfer_id' => $notification['transfer_id'] ?? null,
-                'to' => $notification['to'] ?? null,
                 'exception' => class_basename($exception),
-                'message' => $exception->getMessage(),
             ]);
 
             return null;
@@ -551,7 +547,6 @@ class WhatsappConversationSender
         Log::log($failed ? 'warning' : 'info', 'WhatsApp transfer notification delivery recorded.', [
             'delivery_id' => $tracking->id,
             'transfer_id' => $tracking->transfer_id,
-            'to' => $tracking->recipient_phone,
             'status' => $tracking->status,
             'attempts' => $attempts,
         ]);

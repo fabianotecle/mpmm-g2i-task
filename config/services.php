@@ -4,6 +4,7 @@ return [
 
     'documents' => [
         'public_url' => env('DOCUMENTS_PUBLIC_URL', rtrim(env('APP_URL', ''), '/').'/public'),
+        'link_ttl_minutes' => (int) env('DOCUMENTS_LINK_TTL_MINUTES', 10080),
     ],
 
     /*

@@ -82,10 +82,7 @@ class WhatsappClient
             ]);
         } catch (Throwable $exception) {
             Log::warning('WhatsApp document delivery failed.', [
-                'to' => $to,
-                'filename' => $filename,
                 'exception' => class_basename($exception),
-                'message' => $exception->getMessage(),
             ]);
 
             return [
@@ -145,10 +142,7 @@ class WhatsappClient
             ]);
         } catch (Throwable $exception) {
             Log::warning('WhatsApp image delivery failed.', [
-                'to' => $to,
-                'path' => $path,
                 'exception' => class_basename($exception),
-                'message' => $exception->getMessage(),
             ]);
 
             return [

@@ -10,13 +10,12 @@ class DatabaseSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_database_seeder_can_run_twice_without_duplicate_user_error(): void
+    public function test_database_seeder_is_idempotent_and_creates_no_login(): void
     {
         $this->seed(DatabaseSeeder::class);
         $this->seed(DatabaseSeeder::class);
 
-        $this->assertDatabaseHas('users', [
-            'email' => 'test@example.com',
-        ]);
+        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('general_contents', 2);
     }
 }

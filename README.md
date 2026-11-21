@@ -11,6 +11,14 @@ a new history so omitted files are not recoverable from older commits.
 Main application areas: `app/`, `routes/`, `config/`, `database/migrations/`,
 `resources/`, and `tests/`.
 
+The public seeder creates content only; it does not create an administrator.
+Administrative users must be provisioned explicitly. Admin, finance, and TIC
+accounts have different API permissions, while rotative-wallet management keeps
+its separate configured manager check. Financial document links are signed and
+expire after seven days by default (`DOCUMENTS_LINK_TTL_MINUTES`). For WhatsApp
+link delivery, `DOCUMENTS_PUBLIC_URL` must point to this application's public
+entry point and `APP_KEY` must remain stable until issued links expire.
+
 ---
 
 # 📱💰 My Phone My Money (MpMM)

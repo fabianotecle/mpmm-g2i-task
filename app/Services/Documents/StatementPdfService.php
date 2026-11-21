@@ -71,13 +71,11 @@ class StatementPdfService
 
         Storage::disk('local')->put($path, $pdf->output());
 
-        $baseUrl = rtrim((string) config('services.documents.public_url', config('app.url')), '/');
-
         return [
             'filename' => $filename,
             'download_filename' => $this->downloadFilename($customer, $timezone),
             'path' => Storage::disk('local')->path($path),
-            'url' => $baseUrl.'/api/documents/statements/'.$filename,
+            'url' => DocumentAccessUrl::for('documents.statements', $filename),
             'has_financial_movements' => $hasFinancialMovements,
             'opening_at' => $hasFinancialMovements ? null : $firstAccessAt?->toISOString(),
             'first_access_at' => $hasFinancialMovements ? null : $firstAccessAt?->toISOString(),
@@ -101,14 +99,12 @@ class StatementPdfService
         ])->setPaper('a4', 'landscape');
         Storage::disk('local')->put($path, $pdf->output());
         $phone = preg_replace('/\D+/', '', $customer->phone) ?: $customer->phone;
-        $baseUrl = rtrim((string) config('services.documents.public_url', config('app.url')), '/');
-
         return [
             'filename' => $filename,
             'download_filename' => "MpMM Extrato do Cartão {$phone} "
                 .$generatedAt->timezone($statement['timezone'])->format('Ymd His').'.pdf',
             'path' => Storage::disk('local')->path($path),
-            'url' => $baseUrl.'/api/documents/statements/'.$filename,
+            'url' => DocumentAccessUrl::for('documents.statements', $filename),
             'has_financial_movements' => $statement['movements']->isNotEmpty(),
         ];
     }

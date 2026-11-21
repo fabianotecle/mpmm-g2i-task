@@ -7,12 +7,14 @@ use App\Models\Customer;
 use App\Models\InstallmentProposal;
 use App\Models\Movement;
 use App\Services\Documents\StatementPdfService;
+use App\Services\Documents\DocumentAccessUrl;
 use App\Services\WhatsApp\WhatsappClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class StatementPdfTest extends TestCase
@@ -80,16 +82,43 @@ class StatementPdfTest extends TestCase
         $this->assertStringStartsWith('%PDF-', Storage::disk('local')->get($storedPath));
         $this->assertStringContainsString('/MediaBox [0.000 0.000 595.280 841.890]', Storage::disk('local')->get($storedPath));
         $this->assertSame(1, preg_match_all('/\/Type\s*\/Page\b/', Storage::disk('local')->get($storedPath)));
-        $this->assertSame(
-            'https://example.test/mpmm/public/api/documents/statements/'.$document['filename'],
+        $this->assertStringStartsWith(
+            'https://example.test/mpmm/public/api/documents/statements/'.$document['filename'].'?',
             $document['url'],
         );
+        $signedPath = '/api/documents/statements/'.$document['filename'].'?'.parse_url($document['url'], PHP_URL_QUERY);
 
-        $this->get('/api/documents/statements/'.$document['filename'])
+        $this->get('/api/documents/statements/'.$document['filename'])->assertForbidden();
+        $this->get($signedPath.'&filename=other.pdf')->assertForbidden();
+        $this->get($signedPath)
             ->assertOk()
             ->assertHeader('Content-Type', 'application/pdf');
 
+        Carbon::setTestNow(Carbon::now()->addDays(8));
+        $this->get($signedPath)->assertForbidden();
+
         Carbon::setTestNow();
+    }
+
+    public function test_receipt_documents_and_images_require_signed_links(): void
+    {
+        Storage::fake('local');
+        $id = (string) Str::uuid();
+        $cases = [
+            ['documents.transfer-receipts', "transfer-receipts/transferencia-mpmm-{$id}.pdf", 'application/pdf'],
+            ['images.transfer-receipts', "transfer-receipt-images/transferencia-mpmm-{$id}.png", 'image/png'],
+        ];
+
+        foreach ($cases as [$route, $storagePath, $type]) {
+            Storage::disk('local')->put($storagePath, 'fixture');
+            $filename = basename($storagePath);
+            $url = DocumentAccessUrl::for($route, $filename);
+            $signedPath = '/api/'.($route === 'documents.transfer-receipts' ? 'documents/transfer-receipts/' : 'images/transfer-receipts/')
+                .$filename.'?'.parse_url($url, PHP_URL_QUERY);
+
+            $this->get(strtok($signedPath, '?'))->assertForbidden();
+            $this->get($signedPath)->assertOk()->assertHeader('Content-Type', $type);
+        }
     }
 
     public function test_statement_flow_returns_the_generated_pdf_as_a_document(): void

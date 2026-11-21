@@ -221,7 +221,8 @@ class RedeemPixFlow implements ConversationFlow
             Log::error('Payment provider failed to create a Pix cash-out.', [
                 'conversation_session_id' => $session->id,
                 'provider' => config('payments.cash_out.pix_provider'),
-                'exception' => $exception,
+                'exception' => class_basename($exception),
+                'http_status' => $exception instanceof \Illuminate\Http\Client\RequestException ? $exception->response->status() : null,
             ]);
 
             if ($exception instanceof PixKeyNotFoundException) {

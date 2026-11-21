@@ -400,7 +400,6 @@ class InstallmentService
                         Log::error('Installment notification delivery failed.', [
                             'payment_id' => $id,
                             'exception' => class_basename($exception),
-                            'message' => $exception->getMessage(),
                         ]);
                     }
                 }

@@ -40,13 +40,11 @@ class TransferReceiptPdfService
         ])->setPaper('a4');
 
         Storage::disk('local')->put($path, $pdf->output());
-        $baseUrl = rtrim((string) config('services.documents.public_url', config('app.url')), '/');
-
         return [
             'filename' => $downloadFilename,
             'stored_filename' => $storedFilename,
             'path' => Storage::disk('local')->path($path),
-            'url' => $baseUrl.'/api/documents/transfer-receipts/'.$storedFilename,
+            'url' => DocumentAccessUrl::for('documents.transfer-receipts', $storedFilename),
         ];
     }
 }

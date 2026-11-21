@@ -82,6 +82,7 @@ class UserController extends Controller
 
     public function disableTwoFactor(Request $request, User $user): JsonResponse
     {
+        abort_unless($request->user()->is($user) || $request->user()->role === 'admin', 403);
         $user->forceFill(['two_factor_secret' => null, 'two_factor_confirmed_at' => null])->save();
         $user->tokens()->delete();
 

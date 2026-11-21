@@ -341,7 +341,8 @@ class DepositFlow implements ConversationFlow
                 'conversation_session_id' => $session->id,
                 'payment_method' => $method,
                 'provider' => $providerName,
-                'exception' => $exception,
+                'exception' => class_basename($exception),
+                'http_status' => $exception instanceof \Illuminate\Http\Client\RequestException ? $exception->response->status() : null,
             ]);
 
             if ($providerName === 'asaas' && $this->isInvalidDocumentResponse($exception)) {
